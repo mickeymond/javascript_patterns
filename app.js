@@ -1,55 +1,54 @@
-// Observer Pattern using Constructor function and Prototype
+// Mediator Pattern
 
-function EventObserver() {
-	this.observers = [];
+const User = function(name) {
+	this.name = name;
+	this.chatroom = null;
 }
 
-EventObserver.prototype = {
-	subscribe: function(fn) {
-		this.observers.push(fn);
-		console.log(`You are now subscribed to ${fn.name}`);
+User.prototype = {
+	send: function(message, to) {
+		this.chatroom.send(message, this, to);
 	},
 
-	unsubscribe: function(fn) {
-		this.observers = this.observers.filter(observer => observer !== fn);
-		console.log(`You are now unsubscribed to ${fn.name}`);
-	},
-
-	fire: function() {
-		this.observers.forEach(observer => observer.call());
+	recieve: function(message, from) {
+		console.log(`${from.name} to ${this.name}: ${message}`);
 	}
 }
 
-const click = new EventObserver();
+const Chatroom = function() {
+	let users = {};
 
-// Event Listeners
-document.querySelector('.sub-ms').addEventListener('click', event => {
-	click.subscribe(getCurrentMilliseconds);
-});
+	return {
+		register: function(user) {
+			users[user.name] = user;
+			user.chatroom = this;
+		},
 
-document.querySelector('.sub-unsub-ms').addEventListener('click', event => {
-	click.unsubscribe(getCurrentMilliseconds);
-});
-
-document.querySelector('.sub-s').addEventListener('click', event => {
-	click.subscribe(getCurrentSeconds);
-});
-
-document.querySelector('.sub-unsub-s').addEventListener('click', event => {
-	click.unsubscribe(getCurrentSeconds);
-});
-
-document.querySelector('.fire').addEventListener('click', event => {
-	click.fire();
-});
-
-
-
-// Click Handler
-const getCurrentMilliseconds = function() {
-	console.log(`Current Milliseconds: ${(new Date()).getMilliseconds()}`);
+		send: function(message, from, to) {
+			if (to) {
+				// Single user message
+				to.recieve(message, from);
+			} else {
+				// Mass message
+				for (let key in users) {
+					if (users[key] !== from) {
+						users[key].recieve(message, from);
+					}
+				}
+			}
+		}
+	}
 }
 
-const getCurrentSeconds = function() {
-	console.log(`Current Seconds: ${(new Date()).getSeconds()}`);
-}
+const brad = new User('Brad');
+const jeff = new User('Jeff');
+const sara = new User('Sara');
+
+const chatroom = new Chatroom();
+
+chatroom.register(brad);
+chatroom.register(jeff);
+chatroom.register(sara);
+
+sara.send('I really love you.', jeff);
+jeff.send('Hello Everyone');
