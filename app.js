@@ -1,54 +1,88 @@
-// Mediator Pattern
+// State Pattern
 
-const User = function(name) {
-	this.name = name;
-	this.chatroom = null;
-}
+const PageState = function() {
+	let currentState = new homeState(this);
 
-User.prototype = {
-	send: function(message, to) {
-		this.chatroom.send(message, this, to);
-	},
+	this.init = function() {
+		this.change(new homeState);
+	}
 
-	recieve: function(message, from) {
-		console.log(`${from.name} to ${this.name}: ${message}`);
+	this.change = function(state) {
+		currentState = state;
 	}
 }
 
-const Chatroom = function() {
-	let users = {};
 
-	return {
-		register: function(user) {
-			users[user.name] = user;
-			user.chatroom = this;
-		},
-
-		send: function(message, from, to) {
-			if (to) {
-				// Single user message
-				to.recieve(message, from);
-			} else {
-				// Mass message
-				for (let key in users) {
-					if (users[key] !== from) {
-						users[key].recieve(message, from);
-					}
-				}
-			}
-		}
-	}
+// Home State
+const homeState = function(page) {
+	document.querySelector('#heading').textContent = null;
+	document.querySelector('#content').innerHTML = `
+	<div class="jumbotron">
+		<h1 class="display-4">Hello, world!</h1>
+		<p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+		<hr class="my-4">
+		<p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+		<a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+	</div>
+	`;
 }
 
-const brad = new User('Brad');
-const jeff = new User('Jeff');
-const sara = new User('Sara');
+// About State
+const aboutState = function(page) {
+	document.querySelector('#heading').textContent = 'About Us';
+	document.querySelector('#content').innerHTML = `
+	<p>This is the about page</p>
+	`;
+}
 
-const chatroom = new Chatroom();
+// Contact State
+const contactState = function(page) {
+	document.querySelector('#heading').textContent = 'About Us';
+	document.querySelector('#content').innerHTML = `
+	<form>
+		<div class="form-group">
+			<label for="exampleInputEmail1">Email address</label>
+			<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+			<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+		</div>
+		<div class="form-group">
+			<label for="exampleInputPassword1">Password</label>
+			<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+		</div>
+		<div class="form-group form-check">
+			<input type="checkbox" class="form-check-input" id="exampleCheck1">
+			<label class="form-check-label" for="exampleCheck1">Check me out</label>
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+	`;
+}
 
-chatroom.register(brad);
-chatroom.register(jeff);
-chatroom.register(sara);
+// Instatntiate pageState
+const page = new PageState();
 
-sara.send('I really love you.', jeff);
-jeff.send('Hello Everyone');
+// Init the first state
+page.init();
+
+// UI Vars
+const home = document.getElementById('home'),
+			about = document.getElementById('about'),
+			contact = document.getElementById('contact');
+
+// Home
+home.addEventListener('click', event => {
+	page.change(new homeState);
+	event.preventDefault();
+});
+
+// About
+about.addEventListener('click', event => {
+	page.change(new aboutState);
+	event.preventDefault();
+});
+
+// Contact
+contact.addEventListener('click', event => {
+	page.change(new contactState);
+	event.preventDefault();
+});
