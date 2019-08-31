@@ -1,21 +1,21 @@
-// Observer Pattern using Constructor function and Prototype
+// // Observer Pattern using ES6 Classes
 
-function EventObserver() {
-	this.observers = [];
-}
+class EventObserver {
+	constructor() {
+    this.observers = [];
+  }
 
-EventObserver.prototype = {
-	subscribe: function(fn) {
+  subscribe(fn) {
 		this.observers.push(fn);
 		console.log(`You are now subscribed to ${fn.name}`);
-	},
-
-	unsubscribe: function(fn) {
+  }
+  
+  unsubscribe(fn) {
 		this.observers = this.observers.filter(observer => observer !== fn);
 		console.log(`You are now unsubscribed to ${fn.name}`);
-	},
-
-	fire: function() {
+  }
+  
+  fire() {
 		this.observers.forEach(observer => observer.call());
 	}
 }
