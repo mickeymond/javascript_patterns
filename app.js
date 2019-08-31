@@ -1,60 +1,24 @@
-// Basic Structure
-(function() {
-	//  Declare private vars and functions
-	
-	return {
-		// Declare public vars and functions
-	}
-})();
+// The Singleton Pattern
 
+const Singleton = (function() {
+	let instance;
 
-// Standard Module Pattern
-const UICtrl = (function() {
-	const changeText = function(text) {
-		const element = document.querySelector('h1');
-		element.textContent = text;
-		console.log(text);
+	function createInstance(name) {
+		const object = new Object({name});
+		return object;
 	}
 
 	return {
-		callChangeText: function(text = 'Hello World') {
-			changeText(text);
+		getInstance: function(name) {
+			if (!instance) {
+				instance = createInstance(name);
+			}
+			return instance;
 		}
 	}
 })();
 
-// Standard Module Pattern Test
-document.querySelector('#change-btn').addEventListener('click', function(e) {
-	const textInput = document.querySelector('#text');
-	const text = textInput.value;
-	if (text !== '') {
-		UICtrl.callChangeText(text);
-	} else {
-		UICtrl.callChangeText();
-	}
-	textInput.value = '';
-});
-
-// Revealing Module Pattern
-const ItemCtrl = (function() {
-	let data = [];
-
-	function add(item) {
-		data.push(item);
-		console.log('Item Added...');
-	}
-
-	function get(id) {
-		return data.find(item => id == item.id);
-	}
-
-	return {
-		add,
-		get
-	}
-})();
-
-ItemCtrl.add({id: 1, name: 'Mark'});
-ItemCtrl.add({id: 2, name: 'Jonas'});
-
-console.log(ItemCtrl.get(1));
+const instanceA = Singleton.getInstance('Oliver Van');
+const instanceB = Singleton.getInstance('Michael Smith');
+console.log(instanceA); // Logs Oliver Van Object
+console.log(instanceB); // Logs Oliver Van as well hence Singleton
